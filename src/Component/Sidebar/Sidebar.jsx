@@ -72,6 +72,10 @@ const Sidebar = ({ sidebar }) => {
           <p>Haha TV</p>
         </div>
         <div className="side-link">
+          <img src={cameron} alt="cameron" />
+          <p>Funny</p>
+        </div>
+        <div className="side-link">
           <img src={megan} alt="megan" />
           <p>Mo-mo making</p>
         </div>
