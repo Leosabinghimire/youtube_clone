@@ -4,6 +4,7 @@
 
 .play-video video {
   width: 100%;
+  object-fit: none;
 }
 
 .play-video h3 {
@@ -24,6 +25,7 @@
 
 .play-video-info img {
   width: 20px;
+  height: 20px;
   margin-right: 8px;
 }
 
@@ -61,4 +63,79 @@
   color: #000;
   font-weight: 600;
   font-size: 18px;
+}
+
+.publisher div span {
+  font-size: 13px;
+  color: #5a5a5a;
+}
+
+.publisher button {
+  background: red;
+  color: #fff;
+  padding: 8px 30px;
+  border: 0;
+  outline: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.video-description {
+  padding-left: 55px;
+  margin: 15px 0;
+}
+
+.video-description p {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #5a5a5a;
+}
+
+.video-description h4 {
+  font-size: 14px;
+  color: #5a5a5a;
+  margin-top: 15px;
+}
+
+.comment {
+  display: flex;
+  align-items: flex-start;
+  margin: 20px 0;
+}
+
+.comment img {
+  width: 35px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.comment h3 {
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.comment h3 span {
+  font-size: 12px;
+  color: #5a5a5a;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.comment-action {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.comment-action img {
+  border-radius: 0;
+  width: 20px;
+  margin-right: 5px;
+}
+
+.comment-action span {
+  margin-right: 20px;
+  color: #5a5a5a;
+  cursor: pointer;
 }
