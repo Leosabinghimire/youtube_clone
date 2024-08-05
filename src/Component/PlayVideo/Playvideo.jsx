@@ -1,27 +1,77 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Playvideo.css";
-import video1 from "../../assets/video.mp4";
 import like from "../../assets/like.png";
 import dislike from "../../assets/dislike.png";
 import share from "../../assets/share.png";
 import save from "../../assets/save.png";
-import jack from "../../assets/jack.png";
-import user_profile from "../../assets/user_profile.jpg";
+import { API_KEY } from "../../data";
+import { value_converter } from "../../data";
+import { formatDate } from "../../data";
 
-const Playvideo = () => {
+const Playvideo = ({ videoId }) => {
+  const [apiData, setApiData] = useState(null);
+  const [channelData, setChanneldata] = useState(null);
+  const [commentData, setCommentData] = useState([]);
+
+  const fetchVideoData = async () => {
+    const videoDetails_url = `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=${API_KEY}`;
+    const response = await fetch(videoDetails_url);
+    const data = await response.json();
+    setApiData(data.items[0]);
+  };
+
+  const fetchOtherData = async () => {
+    const channeldata_url = `https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${apiData.snippet.channelId}&key=${API_KEY}`;
+
+    const response = await fetch(channeldata_url);
+    const data = await response.json();
+    setChanneldata(data.items[0]);
+  };
+
+  const fetchComments = async () => {
+    const comment_url = `https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&videoId=${videoId}&key=${API_KEY}`;
+    const response = await fetch(comment_url);
+    const data = await response.json();
+    setCommentData(data.items);
+  };
+
+  useEffect(() => {
+    fetchVideoData();
+  }, [videoId]);
+
+  useEffect(() => {
+    if (apiData) {
+      fetchOtherData(apiData.snippet.channelId);
+      fetchComments();
+    }
+  }, [apiData]);
+
+  if (!apiData) return <div>No video data available</div>;
+  if (!channelData) return <div>Loading channel data...</div>;
+
   return (
     <div className="play-video">
-      <video src={video1} controls autoPlay muted></video>
-      <h3>Best YouTube Channel To Learn Web Development</h3>
+      <iframe
+        src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+        title={apiData.snippet.title}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen
+      ></iframe>
+      <h3>{apiData.snippet.title}</h3>
       <div className="play-video-info">
-        <p>1525 Views &bull; 2 days ago</p>
+        <p>
+          {value_converter(apiData.statistics.viewCount)} Views &bull;{" "}
+          {formatDate(apiData.snippet.publishedAt)}
+        </p>
         <div>
           <span>
             <img src={like} alt="" />
-            125
+            {value_converter(apiData.statistics.likeCount)}
           </span>
           <span>
-            <img src={dislike} alt="" />0
+            <img src={dislike} alt="" />
+            {value_converter(apiData.statistics.dislikeCount || 0)}
           </span>
           <span>
             <img src={share} alt="" />
@@ -35,123 +85,51 @@ const Playvideo = () => {
       </div>
       <hr />
       <div className="publisher">
-        <img src={jack} alt="jack" />
+        <img
+          src={channelData ? channelData.snippet.thumbnails.default.url : ""}
+          alt="jack"
+        />
         <div>
-          <p>MrBeast</p>
-          <span>25M Subscribers</span>
+          <p>{apiData ? apiData.snippet.channelTitle : ""}</p>
+          <span>
+            {channelData
+              ? value_converter(channelData.statistics.subscriberCount)
+              : ""}
+            Subscribers
+          </span>
         </div>
         <button>Subscribers</button>
       </div>
       <div className="video-description">
-        <p>Channel that make learning Easy</p>
-        <p>Subscribe MrBeast to watch more Tutorials on web development</p>
+        <p>{apiData.snippet.description.slice(0, 250)}</p>
         <hr />
-        <h4>1k Comments</h4>
-        <div className="comment">
-          <img src={user_profile} alt="userprofile" />
-          <div>
-            <h3>
-              Jimmy <span>1 day ago</span>
-            </h3>
-            <p>
-              A computer is an electronic device that manipulates information or
-              data. It has the ability to store, retrieve, and process data.
-              Computers can be used to type documents, send email, play games,
-              browse the web, and more. They are also used to handle complex
-              calculations, control machinery, and process large amounts of
-              information quickly
-            </p>
-            <div className="comment-action">
-              <img src={like} alt="like" />
-              <span>244</span>
-              <img src={dislike} alt="dislike" />
+        <h4>{value_converter(apiData.statistics.commentCount)} Comments</h4>
+
+        {commentData.map((item, index) => {
+          const topLevelComment = item.snippet.topLevelComment;
+          return topLevelComment ? (
+            <div key={index} className="comment">
+              <img
+                src={topLevelComment.snippet.authorProfileImageUrl}
+                alt="userprofile"
+              />
+              <div>
+                <h3>
+                  {topLevelComment.snippet.authorDisplayName}
+                  <span>{formatDate(topLevelComment.snippet.publishedAt)}</span>
+                </h3>
+                <p>{topLevelComment.snippet.textDisplay}</p>
+                <div className="comment-action">
+                  <img src={like} alt="like" />
+                  <span>
+                    {value_converter(topLevelComment.snippet.likeCount)}
+                  </span>
+                  <img src={dislike} alt="dislike" />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div className="comment">
-          <img src={user_profile} alt="userprofile" />
-          <div>
-            <h3>
-              Jimmy <span>1 day ago</span>
-            </h3>
-            <p>
-              A computer is an electronic device that manipulates information or
-              data. It has the ability to store, retrieve, and process data.
-              Computers can be used to type documents, send email, play games,
-              browse the web, and more. They are also used to handle complex
-              calculations, control machinery, and process large amounts of
-              information quickly
-            </p>
-            <div className="comment-action">
-              <img src={like} alt="like" />
-              <span>244</span>
-              <img src={dislike} alt="dislike" />
-            </div>
-          </div>
-        </div>
-        <div className="comment">
-          <img src={user_profile} alt="userprofile" />
-          <div>
-            <h3>
-              Jimmy <span>1 day ago</span>
-            </h3>
-            <p>
-              A computer is an electronic device that manipulates information or
-              data. It has the ability to store, retrieve, and process data.
-              Computers can be used to type documents, send email, play games,
-              browse the web, and more. They are also used to handle complex
-              calculations, control machinery, and process large amounts of
-              information quickly
-            </p>
-            <div className="comment-action">
-              <img src={like} alt="like" />
-              <span>244</span>
-              <img src={dislike} alt="dislike" />
-            </div>
-          </div>
-        </div>
-        <div className="comment">
-          <img src={user_profile} alt="userprofile" />
-          <div>
-            <h3>
-              Jimmy <span>1 day ago</span>
-            </h3>
-            <p>
-              A computer is an electronic device that manipulates information or
-              data. It has the ability to store, retrieve, and process data.
-              Computers can be used to type documents, send email, play games,
-              browse the web, and more. They are also used to handle complex
-              calculations, control machinery, and process large amounts of
-              information quickly
-            </p>
-            <div className="comment-action">
-              <img src={like} alt="like" />
-              <span>244</span>
-              <img src={dislike} alt="dislike" />
-            </div>
-          </div>
-        </div>
-        <div className="comment">
-          <img src={user_profile} alt="userprofile" />
-          <div>
-            <h3>
-              Jimmy <span>1 day ago</span>
-            </h3>
-            <p>
-              A computer is an electronic device that manipulates information or
-              data. It has the ability to store, retrieve, and process data.
-              Computers can be used to type documents, send email, play games,
-              browse the web, and more. They are also used to handle complex
-              calculations, control machinery, and process large amounts of
-              information quickly
-            </p>
-            <div className="comment-action">
-              <img src={like} alt="like" />
-              <span>244</span>
-              <img src={dislike} alt="dislike" />
-            </div>
-          </div>
-        </div>
+          ) : null;
+        })}
       </div>
     </div>
   );

@@ -2,9 +2,9 @@
   flex-basis: 69%;
 }
 
-.play-video video {
+.play-video iframe {
   width: 100%;
-  object-fit: none;
+  height: 37vw;
 }
 
 .play-video h3 {
