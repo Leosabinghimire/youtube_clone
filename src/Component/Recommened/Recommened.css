@@ -25,3 +25,10 @@
 .video-info p {
   font-size: 12px;
 }
+
+@media (max-width:900px) {
+  .recommened {
+    flex-basis: 100%;
+  }
+
+}

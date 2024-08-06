@@ -1,105 +1,53 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Recommened.css";
-import thumbnail1 from "../../assets/thumbnail1.png";
-import thumbnail2 from "../../assets/thumbnail2.png";
-import thumbnail3 from "../../assets/thumbnail3.png";
-import thumbnail4 from "../../assets/thumbnail4.png";
-import thumbnail5 from "../../assets/thumbnail5.png";
-import thumbnail6 from "../../assets/thumbnail6.png";
-import thumbnail7 from "../../assets/thumbnail7.png";
-import thumbnail8 from "../../assets/thumbnail8.png";
+import { API_KEY, value_converter } from "../../data";
+import { Link } from "react-router-dom";
 
 const Recommened = ({ categoryId }) => {
+  const [apiData, setApiData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const relatedvideo_url = `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&regionCode=US&videoCategoryId=${categoryId}&maxResults=20&key=${API_KEY}`;
+        const response = await fetch(relatedvideo_url);
+        const data = await response.json();
+        if (data.items) {
+          setApiData(data.items);
+        } else {
+          console.error("No items found in the API response", data);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [categoryId]);
+
   return (
     <div className="recommened">
-      <div className="side-video-list">
-        <img src={thumbnail1} alt="thumbnail1" />
-        <div className="video-info">
-          <h4>
-            Real Madrid 2 x 3 barcelona &bugg; La Liga 16/17 Extened Goal &
-            Highlights HD
-          </h4>
-          <p>MessiGoat</p>
-          <p>14M Views</p>
-        </div>
-      </div>
-      <div className="side-video-list">
-        <img src={thumbnail2} alt="thumbnail1" />
-        <div className="video-info">
-          <h4>
-            Real Madrid 2 x 3 barcelona &bugg; La Liga 16/17 Extened Goal &
-            Highlights HD
-          </h4>
-          <p>MessiGoat</p>
-          <p>14M Views</p>
-        </div>
-      </div>
-      <div className="side-video-list">
-        <img src={thumbnail3} alt="thumbnail1" />
-        <div className="video-info">
-          <h4>
-            Real Madrid 2 x 3 barcelona &bugg; La Liga 16/17 Extened Goal &
-            Highlights HD
-          </h4>
-          <p>MessiGoat</p>
-          <p>14M Views</p>
-        </div>
-      </div>
-      <div className="side-video-list">
-        <img src={thumbnail4} alt="thumbnail1" />
-        <div className="video-info">
-          <h4>
-            Real Madrid 2 x 3 barcelona &bugg; La Liga 16/17 Extened Goal &
-            Highlights HD
-          </h4>
-          <p>MessiGoat</p>
-          <p>14M Views</p>
-        </div>
-      </div>
-      <div className="side-video-list">
-        <img src={thumbnail5} alt="thumbnail1" />
-        <div className="video-info">
-          <h4>
-            Real Madrid 2 x 3 barcelona &bugg; La Liga 16/17 Extened Goal &
-            Highlights HD
-          </h4>
-          <p>MessiGoat</p>
-          <p>14M Views</p>
-        </div>
-      </div>
-      <div className="side-video-list">
-        <img src={thumbnail6} alt="thumbnail1" />
-        <div className="video-info">
-          <h4>
-            Real Madrid 2 x 3 barcelona &bugg; La Liga 16/17 Extened Goal &
-            Highlights HD
-          </h4>
-          <p>MessiGoat</p>
-          <p>14M Views</p>
-        </div>
-      </div>
-      <div className="side-video-list">
-        <img src={thumbnail7} alt="thumbnail1" />
-        <div className="video-info">
-          <h4>
-            Real Madrid 2 x 3 barcelona &bugg; La Liga 16/17 Extened Goal &
-            Highlights HD
-          </h4>
-          <p>MessiGoat</p>
-          <p>14M Views</p>
-        </div>
-      </div>
-      <div className="side-video-list">
-        <img src={thumbnail8} alt="thumbnail1" />
-        <div className="video-info">
-          <h4>
-            Real Madrid 2 x 3 barcelona &bugg; La Liga 16/17 Extened Goal &
-            Highlights HD
-          </h4>
-          <p>MessiGoat</p>
-          <p>14M Views</p>
-        </div>
-      </div>
+      {apiData.length > 0 ? (
+        apiData.map((item, index) => {
+          const { snippet, statistics } = item;
+          return (
+            <Link
+              to={`/video/${snippet.categoryId}/${item.id}`}
+              key={index}
+              className="side-video-list"
+            >
+              <img src={snippet.thumbnails.medium.url} alt={snippet.title} />
+              <div className="video-info">
+                <h4>{snippet.title}</h4>
+                <p>{snippet.channelTitle}</p>
+                <p>{value_converter(statistics.viewCount)} Views</p>
+              </div>
+            </Link>
+          );
+        })
+      ) : (
+        <p>No videos found</p>
+      )}
     </div>
   );
 };
