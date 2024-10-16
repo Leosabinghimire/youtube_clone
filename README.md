@@ -1,5 +1,3 @@
-Here’s an updated GitHub description incorporating the use of an API:
-
 ---
 
 ### YouTube Clone
@@ -27,5 +25,3 @@ This repository contains a YouTube clone built with React.js, featuring API inte
 View the project locally at `http://localhost:3000`.
 
 ---
-
-Feel free to adjust the API details depending on what services you're using!
