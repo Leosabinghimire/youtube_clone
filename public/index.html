@@ -2,19 +2,39 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#ffffff" />
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="VidTube is a YouTube clone built with React and the YouTube Data API. Browse trending videos, search, and watch."
     />
-
+    <link rel="icon" href="%PUBLIC_URL%/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-
-    <title>Youtube</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap"
+    />
+    <title>VidTube</title>
+    <style>
+      /* Background before the MUI theme mounts, so dark mode does not flash white. */
+      html { background: #ffffff; }
+      html[data-theme="dark"] { background: #0f0f0f; color-scheme: dark; }
+    </style>
+    <script>
+      // Apply the saved theme before first paint to avoid a flash of the wrong theme.
+      (function () {
+        try {
+          var saved = JSON.parse(localStorage.getItem("vidtube-theme"));
+          var theme = saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
   </body>
 </html>
